@@ -72,6 +72,7 @@
                                                 <th>Adı</th>
                                                 <th>Üst kateqoriyası</th>
                                                 <th>Kateqoriyası</th>
+                                                <th>Modullar</th>
                                                 <th>Status</th>
                                                 <th>Əməliyat</th>
                                             </tr>
@@ -85,6 +86,7 @@
                                                 <td>{{$product->title}}</td>
                                                 <td>{{$product->category?->parent?->title}}</td>
                                                 <td>{{$product->category?->title}}</td>
+                                                <td><a href="{{ route('products.modules.index', [$product->id]) }}" class="btn btn-info">Modullar</a></td>
 {{--                                                <td><img src="{{asset('storage/'.$product->image)}}" style="width: 100px; height: 50px" alt=""></td>--}}
                                                 <td>
                                                     @if($product->is_active)
@@ -95,7 +97,7 @@
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    <a href="{{route('products.edit',$product->id)}}" class="btn btn-primary" style="margin-right: 15px" >Edit</a>
+                                                    <a href="{{route('products.edit',$product->id)}}" class="btn btn-warning" style="margin-right: 15px" >Edit</a>
                                                     <form action="{{route('products.destroy', $product->id)}}" method="post" style="display: inline-block">
                                                         {{ method_field('DELETE') }}
                                                         @csrf

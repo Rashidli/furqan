@@ -29,7 +29,7 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <label class="col-form-label">Şəkli</label>
+                                        <label class="col-form-label">Video</label>
                                         <input class="form-control" type="file" name="image">
                                         @if($errors->first('image')) <small class="form-text text-danger">{{$errors->first('image')}}</small> @endif
                                     </div>

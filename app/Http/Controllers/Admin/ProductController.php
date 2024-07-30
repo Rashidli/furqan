@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 use App\Models\Category;
+use App\Models\Filter;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Services\ImageUploadService;
@@ -42,7 +43,10 @@ class ProductController extends Controller
         $query = Product::query();
 
         if ($categoryId) {
-            $query->where('category_id', $categoryId);
+            $query->where(function($q) use ($categoryId) {
+                $q->where('category_id', $categoryId)
+                    ->orWhere('parent_category_id', $categoryId);
+            });
         }
 
         if ($name) {
@@ -64,8 +68,9 @@ class ProductController extends Controller
 
     public function create()
     {
-        $categories = Category::with('children')->whereNull('parent_id')->get();
-        return view('admin.products.create', compact('categories'));
+        $categories = Category::all();
+        $filters = Filter::with('options')->active()->get();
+        return view('admin.products.create', compact('categories','filters'));
     }
 
     /**
@@ -73,59 +78,67 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+
         $request->validate([
-            'az_title'=>'required',
-            'en_title'=>'required',
-            'ru_title'=>'required',
-            'image'=>'required',
-            'az_description'=>'required',
-            'en_description'=>'required',
-            'ru_description'=>'required',
-            'price'=>'nullable',
-            'discounted_price'=>'nullable',
-            'discount_percent'=>'nullable',
+
         ]);
 
-        if($request->hasFile('image')){
-            $filename = $this->imageUploadService->upload($request->file('image'));
-        }
+        DB::beginTransaction();
+        try {
+            if($request->hasFile('image')){
+                $filename = $this->imageUploadService->upload($request->file('image'));
+            }
 
-        $product = Product::create([
-            'category_id' => $request->category_id,
-            'parent_category_id' => $request->parent_category_id,
-            'price' => $request->price,
-            'discounted_price' => $request->discounted_price,
-            'discount_percent' => $request->discount_percent,
+            $product = Product::create([
+                'category_id' => $request->category_id,
+                'price' => $request->price,
+                'discounted_price' => $request->discounted_price,
+                'discount_percent' => $request->discount_percent,
+                'is_popular' => isset($request->is_popular),
+                'is_stock' => isset($request->is_stock),
+                'image'=>  $filename,
+                'az'=>[
+                    'title'=>$request->az_title,
+                    'description'=>$request->az_description,
+                    'slug'=>$this->generateUniqueSlug($request->az_title),
+                ],
+                'en'=>[
+                    'title'=>$request->en_title,
+                    'description'=>$request->en_description,
+                    'slug'=>$this->generateUniqueSlug($request->en_title),
+                ],
+                'ru'=>[
+                    'title'=>$request->ru_title,
+                    'description'=>$request->ru_description,
+                    'slug'=>$this->generateUniqueSlug($request->ru_title),
+                ]
+            ]);
 
-            'is_stock' => isset($request->is_stock),
-            'image'=>  $filename,
-            'az'=>[
-                'title'=>$request->az_title,
-                'description'=>$request->az_description,
-                'slug'=>$this->generateUniqueSlug($request->az_title),
-            ],
-            'en'=>[
-                'title'=>$request->en_title,
-                'description'=>$request->en_description,
-                'slug'=>$this->generateUniqueSlug($request->en_title),
-            ],
-            'ru'=>[
-                'title'=>$request->ru_title,
-                'description'=>$request->ru_description,
-                'slug'=>$this->generateUniqueSlug($request->ru_title),
-            ]
-        ]);
+            if($request->hasFile('product_images')) {
+                foreach ($request->file('product_images') as $product_image) {
+                    if ($product_image->isValid()) {
+                        $filename = $this->imageUploadService->upload($product_image);
+                        ProductImage::create([
+                            'image' => $filename,
+                            'product_id' => $product->id
+                        ]);
+                    }
+                }
+            }
 
-        if($request->hasFile('product_images')) {
-            foreach ($request->file('product_images') as $product_image) {
-                if ($product_image->isValid()) {
-                    $filename = $this->imageUploadService->upload($product_image);
-                    ProductImage::create([
-                        'image' => $filename,
+            foreach ($request->option_ids as $option_id){
+                if($option_id !== null){
+                    DB::table('option_product')->insert([
+                        'option_id' => $option_id,
                         'product_id' => $product->id
                     ]);
                 }
             }
+
+            DB::commit();
+        }catch (\Exception $exception){
+            DB::rollBack();
+            return $exception->getMessage();
         }
 
         return redirect()->route('products.index')->with('message','Product added successfully');
@@ -145,9 +158,9 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $categories = Category::whereNull('parent_id')->get();
-        $subcategories = Category::where('parent_id', $product->parent_category_id)->get();
-        return view('admin.products.edit', compact('product','categories','subcategories'));
+        $categories = Category::all();
+        $filters = Filter::with('options')->active()->get();
+        return view('admin.products.edit', compact('product','categories','filters'));
     }
 
     /**
@@ -156,6 +169,7 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
+
         $request->validate([
             'az_title'=>'required',
             'en_title'=>'required',
@@ -165,55 +179,73 @@ class ProductController extends Controller
             'ru_description'=>'required',
             'price'=>'nullable',
             'discounted_price'=>'nullable',
+            'category_id'=>'required',
         ]);
 
-        if($request->hasFile('image')){
-            $filename = $this->imageUploadService->upload($request->file('image'));
-            $product->image = $filename;
-        }
+        DB::beginTransaction();
+        try {
+            if($request->hasFile('image')){
+                $filename = $this->imageUploadService->upload($request->file('image'));
+                $product->image = $filename;
+            }
 
-        $product->update( [
-            'is_active'=> $request->is_active,
-            'category_id' => $request->category_id,
-            'parent_category_id' => $request->parent_category_id,
-            'price' => $request->price,
-            'discounted_price' => $request->discounted_price,
-            'is_stock' => isset($request->is_stock),
-            'discount_percent' => $request->discount_percent,
-            'az'=>[
-                'title'=>$request->az_title,
-                'description'=>$request->az_description,
-                'slug'=>$this->generateUniqueSlug($request->az_title),
-            ],
-            'en'=>[
-                'title'=>$request->en_title,
-                'description'=>$request->en_description,
-                'slug'=>$this->generateUniqueSlug($request->en_title),
-            ],
-            'ru'=>[
-                'title'=>$request->ru_title,
-                'description'=>$request->ru_description,
-                'slug'=>$this->generateUniqueSlug($request->ru_title),
-            ]
+            $product->update( [
+                'is_active'=> $request->is_active,
+                'category_id' => $request->category_id,
+                'price' => $request->price,
+                'discounted_price' => $request->discounted_price,
+                'is_stock' => isset($request->is_stock),
+                'is_popular' => isset($request->is_popular),
+                'discount_percent' => $request->discount_percent,
+                'az'=>[
+                    'title'=>$request->az_title,
+                    'description'=>$request->az_description,
+                    'slug'=>$this->generateUniqueSlug($request->az_title),
+                ],
+                'en'=>[
+                    'title'=>$request->en_title,
+                    'description'=>$request->en_description,
+                    'slug'=>$this->generateUniqueSlug($request->en_title),
+                ],
+                'ru'=>[
+                    'title'=>$request->ru_title,
+                    'description'=>$request->ru_description,
+                    'slug'=>$this->generateUniqueSlug($request->ru_title),
+                ]
 
-        ]);
+            ]);
 
-        if($request->hasFile('product_images')) {
+            if($request->hasFile('product_images')) {
 
-            foreach ($request->file('product_images') as $product_image) {
+                foreach ($request->file('product_images') as $product_image) {
 
-                if ($product_image->isValid()) {
-                    $filename = $this->imageUploadService->upload($product_image);
-                    ProductImage::create([
-                        'image' => $filename,
+                    if ($product_image->isValid()) {
+                        $filename = $this->imageUploadService->upload($product_image);
+                        ProductImage::create([
+                            'image' => $filename,
+                            'product_id' => $product->id
+                        ]);
+                    }
+                }
+            }
+
+            DB::table('option_product')->where('product_id',$product->id)->delete();
+
+            foreach ($request->option_ids as $option_id){
+                if($option_id !== null){
+                    DB::table('option_product')->insert([
+                        'option_id' => $option_id,
                         'product_id' => $product->id
                     ]);
                 }
-            }
+            };
+            DB::commit();
+        }catch (\Exception $exception){
+            DB::rollBack();
+            return $exception->getMessage();
         }
 
-
-        return redirect()->back()->with('message','Product updated successfully');
+        return redirect()->route('products.index')->with('message','Product updated successfully');
 
     }
 

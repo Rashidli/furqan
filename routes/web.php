@@ -8,17 +8,24 @@ use App\Http\Controllers\Admin\{AboutController,
     ContactController,
     ContactItemController,
     CreditController,
+    FilterController,
     ImageController,
+    MainAboutController,
     MainController,
+    ModuleController,
     OfficeController,
+    OptionController,
     PageController,
     PermissionController,
     ProductController,
     RoleController,
+    ServiceController,
     SingleController,
     SocialController,
+    SubscriptionController,
     TestimonialController,
     UserController,
+    VacancyController,
     WordController};
 
 use Illuminate\Support\Facades\Route;
@@ -36,6 +43,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/optimize_clear',function (){
    \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+});
+
+Route::get('/storage',function (){
+    \Illuminate\Support\Facades\Artisan::call('storage:link');
 });
 
 Route::get('/', [PageController::class,'login'])->name('login');
@@ -67,6 +78,14 @@ Route::group(['middleware' =>'auth'], function (){
     Route::resource('testimonials',TestimonialController::class);
     Route::resource('credits',CreditController::class);
     Route::resource('offices',OfficeController::class);
+    Route::resource('main_abouts',MainAboutController::class);
+    Route::resource('services',ServiceController::class);
+    Route::resource('services',ServiceController::class);
+    Route::resource('subscriptions',SubscriptionController::class);
+    Route::resource('vacancies',VacancyController::class);
+    Route::resource('products.modules',ModuleController::class);
+    Route::resource('filters',FilterController::class);
+    Route::resource('filters.options',OptionController::class);
     Route::get('/delete-slider-image/{id}', [ProductController::class, 'deleteImage'])->name('delete-slider-image');
 
     Route::get('/categories/{id}/children', [CategoryController::class, 'getChildren']);

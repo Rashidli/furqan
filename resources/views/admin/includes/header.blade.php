@@ -172,6 +172,12 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{route('main_abouts.index')}}">
+                            <i class="ri-layout-3-line"></i>
+                            <span>Haqqımızda (main)</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{route('categories.index')}}">
                             <i class="ri-layout-3-line"></i>
                             <span>Kateqoriyalar</span>
@@ -184,6 +190,12 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{route('filters.index')}}">
+                            <i class="ri-layout-3-line"></i>
+                            <span>Filterlər</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{route('campaigns.index')}}">
                             <i class="ri-layout-3-line"></i>
                             <span>Kampaniyalar</span>
@@ -193,6 +205,12 @@
                         <a href="{{route('blogs.index')}}">
                             <i class="ri-layout-3-line"></i>
                             <span>Xəbərlər</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{route('vacancies.index')}}">
+                            <i class="ri-layout-3-line"></i>
+                            <span>Vakansiyalar</span>
                         </a>
                     </li>
                     <li>
@@ -211,6 +229,12 @@
                         <a href="{{route('offices.index')}}">
                             <i class="ri-layout-3-line"></i>
                             <span>Filiallar</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{route('services.index')}}">
+                            <i class="ri-layout-3-line"></i>
+                            <span>Xidmətlər</span>
                         </a>
                     </li>
                     <li>
@@ -244,9 +268,9 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{route('singles.index')}}">
+                        <a href="{{route('subscriptions.index')}}">
                             <i class="ri-layout-3-line"></i>
-                            <span>SEO</span>
+                            <span>Abunələr</span>
                         </a>
                     </li>
 

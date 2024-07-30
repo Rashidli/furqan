@@ -22,7 +22,7 @@ class AboutController extends Controller
     public function index()
     {
 
-        $abouts = About::paginate(10);
+        $abouts = About::query()->paginate(10);
         return view('admin.abouts.index', compact('abouts'));
 
     }

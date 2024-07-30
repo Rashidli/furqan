@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Models\Blog;
+use App\Services\ImageUploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -13,7 +14,7 @@ use Intervention\Image\ImageManager;
 class BlogController extends Controller
 {
 
-    public function __construct()
+    public function __construct(protected ImageUploadService $imageUploadService)
     {
         $this->middleware('permission:list-blogs|create-blogs|edit-blogs|delete-blogs', ['only' => ['index','show']]);
         $this->middleware('permission:create-blogs', ['only' => ['create','store']]);
@@ -66,14 +67,7 @@ class BlogController extends Controller
         ]);
 
         if($request->hasFile('image')){
-            $file = $request->file('image');
-            $manager = new ImageManager(new Driver());
-
-            $image = $manager->read($file);
-            $image = $image->toWebp(60);
-
-            $filename = Str::uuid()  . '.webp';
-            Storage::put('public/' . $filename, (string) $image);
+            $filename = $this->imageUploadService->upload($request->file('image'));
         }
 
         Blog::create([
@@ -133,15 +127,7 @@ class BlogController extends Controller
         ]);
 
         if($request->hasFile('image')){
-            $file = $request->file('image');
-            $manager = new ImageManager(new Driver());
-
-            $image = $manager->read($file);
-            $image = $image->toWebp(60);
-
-            $filename = Str::uuid()  . '.webp';
-            Storage::put('public/' . $filename, (string) $image);
-            $blog->image = $filename;
+            $blog->image = $this->imageUploadService->upload($request->file('image'));
         }
 
         $blog->update( [
@@ -150,17 +136,14 @@ class BlogController extends Controller
             'az'=>[
                 'title'=>$request->az_title,
                 'description'=>$request->az_description,
-                'slug'=>$this->generateUniqueSlug($request->az_title),
             ],
             'en'=>[
                 'title'=>$request->en_title,
                 'description'=>$request->en_description,
-                'slug'=>$this->generateUniqueSlug($request->en_title),
             ],
             'ru'=>[
                 'title'=>$request->ru_title,
                 'description'=>$request->ru_description,
-                'slug'=>$this->generateUniqueSlug($request->ru_title),
             ]
 
         ]);

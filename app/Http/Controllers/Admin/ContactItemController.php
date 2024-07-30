@@ -39,6 +39,7 @@ class ContactItemController extends Controller
             'en_value'=>'required',
             'ru_value'=>'required',
             'image'=>'required',
+            'footer_icon'=>'required',
         ]);
 
         if($request->hasFile('image')){
@@ -47,8 +48,15 @@ class ContactItemController extends Controller
             $file->storeAs('public/',$filename);
         }
 
+        if($request->hasFile('footer_icon')){
+            $file = $request->file('footer_icon');
+            $filenameIcon = Str::uuid() . "." . $file->extension();
+            $file->storeAs('public/',$filenameIcon);
+        }
+
         ContactItem::create([
             'image'=>  $filename,
+            'footer_icon'=>  $filenameIcon,
             'az'=>[
                 'title'=>$request->az_title,
                 'value'=>$request->az_value,
@@ -106,6 +114,14 @@ class ContactItemController extends Controller
             $filename = Str::uuid() . "." . $file->extension();
             $file->storeAs('public/',$filename);
             $contact_item->image = $filename;
+        }
+
+        if($request->hasFile('footer_icon')){
+
+            $file = $request->file('footer_icon');
+            $filename = Str::uuid() . "." . $file->extension();
+            $file->storeAs('public/',$filename);
+            $contact_item->footer_icon = $filename;
         }
 
         $contact_item->update( [

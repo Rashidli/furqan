@@ -45,6 +45,21 @@
                                         <small class="form-text text-danger">{{ $errors->first('ru_title') }}</small>
                                     @endif
                                 </div>
+
+                                @foreach($filters as $filter)
+                                    <div class="mb-3">
+                                        <label class="col-form-label">{{ $filter->title }}</label>
+                                        <select class="form-control" name="option_ids[]">
+                                            <option value="">Select {{ $filter->title }}</option>
+                                            @foreach($filter->options as $option)
+                                                <option value="{{ $option->id }}" {{ $product->options->contains($option->id) ? 'selected' : '' }}>
+                                                    {{ $option->title }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                @endforeach
+
                                 <div class="mb-3">
                                     <label class="col-form-label">Mətn az</label>
                                     <textarea id="editor_az" class="form-control"
@@ -78,31 +93,17 @@
                             <div class="col-6">
                                 <div class="mb-3">
                                     <label class="col-form-label">Kateqoriya</label>
-                                    <select class="form-control" name="parent_category_id" id="category_id">
+                                    <select class="form-control" name="category_id" id="category_id">
                                         <option value="">Select Category</option>
                                         @foreach($categories as $category)
-                                            <option value="{{ $category->id }}" {{ $product->parent_category_id == $category->id ? 'selected' : '' }}>{{ $category->title }}</option>
+                                            <option value="{{ $category->id }}" {{ $product->category_id == $category->id ? 'selected' : '' }}>{{ $category->title }}</option>
                                         @endforeach
                                     </select>
                                     @error('category_id')
                                     <small class="form-text text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
-                                <div id="child-category-container">
-                                    @if($subcategories->isNotEmpty())
-                                        <div class="mb-3">
-                                            <label class="col-form-label">Sub-Kateqoriya</label>
-                                            <select class="form-control" name="category_id" id="subcategory_id">
-                                                <option value="">Select Sub-Category</option>
-                                                @foreach($subcategories as $subcategory)
-                                                    <option value="{{ $subcategory->id }}" {{ $product->category_id == $subcategory->id ? 'selected' : '' }}>{{ $subcategory->title }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    @else
-                                        <small class="form-text text-muted">No sub-categories available.</small>
-                                    @endif
-                                </div>
+
                                 <div class="mb-3">
                                     <label class="col-form-label">Qiymət</label>
                                     <input class="form-control" type="text" name="price"
@@ -129,9 +130,15 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="col-form-label">Stock</label>
+                                    <label class="col-form-label">Stockda var?</label>
                                     <input  type="checkbox" name="is_stock" {{$product->is_stock ? 'checked' : ''}}>
                                     @if($errors->first('is_stock')) <small class="form-text text-danger">{{$errors->first('is_stock')}}</small> @endif
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="col-form-label">Populyar?</label>
+                                    <input  type="checkbox" name="is_popular" {{$product->is_popular ? 'checked' : ''}}>
+                                    @if($errors->first('is_popular')) <small class="form-text text-danger">{{$errors->first('is_popular')}}</small> @endif
                                 </div>
 
                                 <!-- Image Inputs -->
@@ -185,37 +192,37 @@
     </div>
 </div>
 @include('admin.includes.footer')
-<script>
-    $(document).ready(function() {
-        $('#category_id').change(function() {
-            var categoryId = $(this).val();
-            if (categoryId) {
-                $.ajax({
-                    url: '/categories/' + categoryId + '/children',
-                    type: 'GET',
-                    success: function(response) {
-                        console.log(response); // Log the response for debugging
+{{--<script>--}}
+{{--    $(document).ready(function() {--}}
+{{--        $('#category_id').change(function() {--}}
+{{--            var categoryId = $(this).val();--}}
+{{--            if (categoryId) {--}}
+{{--                $.ajax({--}}
+{{--                    url: '/categories/' + categoryId + '/children',--}}
+{{--                    type: 'GET',--}}
+{{--                    success: function(response) {--}}
+{{--                        console.log(response); // Log the response for debugging--}}
 
-                        if (Array.isArray(response) && response.length > 0) {
-                            var childSelect = '<div class="mb-3"><label class="col-form-label">Sub-Kateqoriya</label>';
-                            childSelect += '<select class="form-control" name="category_id" id="subcategory_id">';
-                            childSelect += '<option value="">Select Sub-Category</option>';
-                            $.each(response, function(index, childCategory) {
-                                childSelect += '<option value="' + childCategory.id + '">' + childCategory.title + '</option>';
-                            });
-                            childSelect += '</select></div>';
-                            $('#child-category-container').html(childSelect);
-                        } else {
-                            $('#child-category-container').html('<small class="form-text text-muted">No sub-categories available.</small>');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error:', status, error); // Log error for debugging
-                    }
-                });
-            } else {
-                $('#child-category-container').html('');
-            }
-        });
-    });
-</script>
+{{--                        if (Array.isArray(response) && response.length > 0) {--}}
+{{--                            var childSelect = '<div class="mb-3"><label class="col-form-label">Sub-Kateqoriya</label>';--}}
+{{--                            childSelect += '<select class="form-control" name="category_id" id="subcategory_id">';--}}
+{{--                            childSelect += '<option value="">Select Sub-Category</option>';--}}
+{{--                            $.each(response, function(index, childCategory) {--}}
+{{--                                childSelect += '<option value="' + childCategory.id + '">' + childCategory.title + '</option>';--}}
+{{--                            });--}}
+{{--                            childSelect += '</select></div>';--}}
+{{--                            $('#child-category-container').html(childSelect);--}}
+{{--                        } else {--}}
+{{--                            $('#child-category-container').html('<small class="form-text text-muted">No sub-categories available.</small>');--}}
+{{--                        }--}}
+{{--                    },--}}
+{{--                    error: function(xhr, status, error) {--}}
+{{--                        console.error('Error:', status, error); // Log error for debugging--}}
+{{--                    }--}}
+{{--                });--}}
+{{--            } else {--}}
+{{--                $('#child-category-container').html('');--}}
+{{--            }--}}
+{{--        });--}}
+{{--    });--}}
+{{--</script>--}}

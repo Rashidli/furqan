@@ -40,6 +40,22 @@
                                 </div>
 
                                 <div class="mb-3">
+{{--                                    <img style="width: 100px; height: 100px;" src="" class="uploaded_image" alt="{{$main->image}}">--}}
+                                    <iframe src="{{asset('storage/' . $main->image)}}"></iframe>
+                                    <div class="form-group">
+                                        <label >Video</label>
+                                        <input type="file" name="image" class="form-control">
+                                    </div>
+                                    @if($errors->first('image')) <small class="form-text text-danger">{{$errors->first('image')}}</small> @endif
+                                </div>
+
+                                <div class="mb-3">
+                                    <button class="btn btn-primary">Yadda saxla</button>
+                                </div>
+
+                            </div>
+                            <div class="col-6">
+                                <div class="mb-3">
                                     <label class="col-form-label">Text az</label>
                                     <textarea  class="form-control" type="text" name="az_description">{{$main->translate('az')->description}}</textarea>
                                     @if($errors->first('az_description')) <small class="form-text text-danger">{{$errors->first('az_description')}}</small> @endif
@@ -56,16 +72,6 @@
                                     <textarea class="form-control" type="text" name="ru_description">{{$main->translate('ru')->description}}</textarea>
                                     @if($errors->first('ru_description')) <small class="form-text text-danger">{{$errors->first('ru_description')}}</small> @endif
                                 </div>
-
-                                <div class="mb-3">
-                                    <img style="width: 100px; height: 100px;" src="{{asset('storage/' . $main->image)}}" class="uploaded_image" alt="{{$main->image}}">
-                                    <div class="form-group">
-                                        <label >Image</label>
-                                        <input type="file" name="image" class="form-control">
-                                    </div>
-                                    @if($errors->first('image')) <small class="form-text text-danger">{{$errors->first('image')}}</small> @endif
-                                </div>
-
                                 <div class="mb-3">
                                     <label class="col-form-label">Active</label>
                                     <select name="is_active" id="" class="form-control">
@@ -73,11 +79,6 @@
                                         <option value="0" {{$main->is_active == false ? 'selected' : ''}}>Deactive</option>
                                     </select>
                                 </div>
-
-                                <div class="mb-3">
-                                    <button class="btn btn-primary">Yadda saxla</button>
-                                </div>
-
                             </div>
                         </div>
                     </div>

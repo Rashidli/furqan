@@ -9,11 +9,11 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Auth;
-
+use \Illuminate\Http\JsonResponse;
 
 class CustomerAuthController extends Controller
 {
-    public function register(Request $request)
+    public function register(Request $request): JsonResponse
     {
         $request->validate([
             "name" => "required",
@@ -37,7 +37,7 @@ class CustomerAuthController extends Controller
         ], Response::HTTP_CREATED);
     }
 
-    public function login(Request $request)
+    public function login(Request $request): JsonResponse
     {
         $request->validate([
             "email" => "required|email",
@@ -47,7 +47,7 @@ class CustomerAuthController extends Controller
         if (!$token = Auth::guard('api')->attempt($request->only('email', 'password'))) {
             return response()->json([
                 "status" => false,
-                "message" => "Invalid details"
+                "message" => "Invalid credentials"
             ], Response::HTTP_UNAUTHORIZED);
         }
 
@@ -58,7 +58,7 @@ class CustomerAuthController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function profile()
+    public function profile(): JsonResponse
     {
         $userdata = Auth::guard('api')->user();
 
@@ -69,7 +69,7 @@ class CustomerAuthController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function refreshToken()
+    public function refreshToken(): JsonResponse
     {
         $newToken = Auth::guard('api')->refresh();
 
@@ -90,7 +90,7 @@ class CustomerAuthController extends Controller
         ],Response::HTTP_OK);
     }
 
-    public function update(Request $request)
+    public function update(Request $request): JsonResponse
     {
         $user = Auth::guard('api')->user();
 
@@ -124,6 +124,31 @@ class CustomerAuthController extends Controller
             "status" => true,
             "message" => "User updated successfully",
             "data" => $user
+        ], Response::HTTP_OK);
+    }
+
+    public function updatePassword(Request $request): JsonResponse
+    {
+        $user = Auth::guard('api')->user();
+
+        $request->validate([
+            "current_password" => "required",
+            "new_password" => "required|confirmed"
+        ]);
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                "status" => false,
+                "message" => "Current password does not match"
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return response()->json([
+            "status" => true,
+            "message" => "Password updated successfully"
         ], Response::HTTP_OK);
     }
 }

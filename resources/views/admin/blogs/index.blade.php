@@ -23,7 +23,7 @@
                                         <th>Status</th>
                                         <th>Əməliyyat</th>
                                     </tr>
-                                    </thead><!-- end thead -->
+                                    </thead>
                                     <tbody>
                                         @foreach($blogs as $blog)
 

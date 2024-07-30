@@ -85,7 +85,7 @@
                                 <div class="mb-3">
                                     <img src="{{ asset('storage/' . $testimonial->bg_image) }}" class="uploaded_bg_image mb-3" alt="{{ $testimonial->bg_image }}" style="width: 100px; height: 100px;">
                                     <div class="form-group">
-                                        <label>Image</label>
+                                        <label>Arxa şəkil</label>
                                         <input type="file" name="bg_image" class="form-control">
                                     </div>
                                     @if($errors->first('bg_image'))

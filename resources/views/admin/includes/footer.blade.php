@@ -84,7 +84,7 @@
     });
 
     $(document).ready(function() {
-        $('#editor_az, #editor_en, #editor_ru').summernote({
+        $('#editor_az, #editor_en, #editor_ru, #editor1_az, #editor1_en, #editor1_ru').summernote({
             height: 100,
             toolbar: [
                 ['style', ['style']],
@@ -97,6 +97,7 @@
                 ['view', ['fullscreen', 'codeview', 'help']]
             ]
         });
+
     });
 </script>
 </body>

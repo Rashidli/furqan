@@ -22,7 +22,6 @@
                                             <tr>
                                                 <th>№</th>
                                                 <th>Ad</th>
-                                                <th>Telefon</th>
                                                 <th>Email</th>
                                                 <th>Mesaj</th>
                                                 <th>Əməliyyat</th>
@@ -35,7 +34,6 @@
                                             <tr>
                                                 <th scope="row">{{$contact->id}}</th>
                                                 <th scope="row">{{$contact->name}}</th>
-                                                <th scope="row">{{$contact->phone}}</th>
                                                 <th scope="row">{{$contact->email}}</th>
                                                 <th scope="row">{{$contact->message}}</th>
                                                 <td>

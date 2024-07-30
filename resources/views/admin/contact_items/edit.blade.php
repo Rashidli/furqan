@@ -41,10 +41,19 @@
                                 <div class="mb-3">
                                     <img style="width: 100px; height: 100px;" src="{{ asset('storage/' . $contact_item->image) }}" class="uploaded_image" alt="{{ $contact_item->image }}">
                                     <div class="form-group">
-                                        <label>Image</label>
+                                        <label>Icon</label>
                                         <input type="file" name="image" class="form-control">
                                     </div>
                                     @if($errors->first('image')) <small class="form-text text-danger">{{ $errors->first('image') }}</small> @endif
+                                </div>
+
+                                <div class="mb-3">
+                                    <img style="width: 100px; height: 100px;" src="{{ asset('storage/' . $contact_item->footer_icon) }}" class="uploaded_image" alt="{{ $contact_item->footer_icon }}">
+                                    <div class="form-group">
+                                        <label>Footer icon</label>
+                                        <input type="file" name="footer_icon" class="form-control">
+                                    </div>
+                                    @if($errors->first('footer_icon')) <small class="form-text text-danger">{{ $errors->first('footer_icon') }}</small> @endif
                                 </div>
 
                                 <div class="mb-3">

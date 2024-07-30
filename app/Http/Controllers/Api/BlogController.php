@@ -7,12 +7,12 @@ use App\Models\Blog;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Admin\Controller;
 use Illuminate\Http\Response;
-
+use \Illuminate\Http\JsonResponse;
 
 class BlogController extends Controller
 {
 
-    public function index()
+    public function index(): JsonResponse
     {
         $blogs = Blog::active()->orderBy('id','asc')->get();
         return response()->json([
@@ -21,7 +21,7 @@ class BlogController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function show($slug)
+    public function show($slug): JsonResponse
     {
 
         $blog = Blog::whereHas('translations', function ($q)use ($slug){

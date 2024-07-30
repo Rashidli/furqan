@@ -29,9 +29,15 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="col-form-label">Şəkli</label>
+                                    <label class="col-form-label">Icon</label>
                                     <input class="form-control" type="file" name="image">
                                     @if($errors->first('image')) <small class="form-text text-danger">{{$errors->first('image')}}</small> @endif
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="col-form-label">Footer icon</label>
+                                    <input class="form-control" type="file" name="footer_icon">
+                                    @if($errors->first('footer_icon')) <small class="form-text text-danger">{{$errors->first('footer_icon')}}</small> @endif
                                 </div>
 
                                 <div class="mb-3">

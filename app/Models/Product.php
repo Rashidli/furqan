@@ -12,7 +12,7 @@ class Product extends Model
 
     use HasFactory, Translatable, SoftDeletes;
     public $translatedAttributes = ['title','description','slug'];
-    protected $fillable = ['image','is_active','brand_id','category_id','parent_category_id'];
+    protected $fillable = ['image','is_active','brand_id','category_id','parent_category_id','is_popular','is_stock'];
 
     public function scopeActive($query)
     {
@@ -24,10 +24,19 @@ class Product extends Model
         return $this->hasMany(ProductImage::class);
     }
 
-
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function modules()
+    {
+      return $this->hasMany(Module::class);
+    }
+
+    public function options()
+    {
+        return $this->belongsToMany(Option::class, 'option_product', 'product_id', 'option_id');
     }
 
 }

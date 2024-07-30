@@ -11,16 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('machine_translations', function (Blueprint $table) {
+        Schema::create('module_translations', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('machine_id');
+            $table->unsignedBigInteger('module_id');
             $table->string('locale')->index();
             $table->string('title');
-            $table->text('description');
-            $table->text('slug')->unique();
 
-            $table->unique(['machine_id', 'locale']);
-            $table->foreign('machine_id')->references('id')->on('machines')->onDelete('cascade');
+            $table->unique(['module_id', 'locale']);
+            $table->foreign('module_id')->references('id')->on('modules')->onDelete('cascade');
         });
     }
 
@@ -29,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('machine_translations');
+        Schema::dropIfExists('module_translations');
     }
 };
