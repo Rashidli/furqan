@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if(!Schema::hasTable('favorites')){
-            Schema::create('favorites', function (Blueprint $table) {
+        if(!Schema::hasTable('carts')){
+            Schema::create('carts', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('customer_id');
-                $table->unsignedBigInteger('product_id');
+                $table->decimal('total_price');
                 $table->timestamps();
 
                 $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
-                $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+                $table->softDeletes();
             });
         }
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('favorites');
+        Schema::dropIfExists('carts');
     }
 };

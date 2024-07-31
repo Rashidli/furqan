@@ -1,9 +1,12 @@
 <?php
 
 
-use App\Http\Controllers\Api\{ContactItemController,
+use App\Http\Controllers\Api\{CartController,
+    ContactItemController,
     ContactController,
     CreditController,
+    FavoritesController,
+    FilterController,
     LogoController,
     MainAboutController,
     OfficeController,
@@ -42,6 +45,14 @@ Route::group(['middleware'=>'setLocale'], function (){
         Route::post("update", [CustomerAuthController::class, "update"]);
         Route::post("updatePassword", [CustomerAuthController::class, "updatePassword"]);
 
+        Route::get('favorites', [FavoritesController::class, 'index']);
+        Route::post('favorites/add/{product}', [FavoritesController::class, 'add']);
+        Route::post('favorites/remove/{product}', [FavoritesController::class, 'remove']);
+
+        Route::get('/cart', [CartController::class, 'index']);
+        Route::post('/cart/add/{product}', [CartController::class, 'add']);
+        Route::post('/cart/remove/{product}', [CartController::class, 'remove']);
+
     });
 
     Route::get('blogs', [BlogController::class, 'index']);
@@ -63,5 +74,7 @@ Route::group(['middleware'=>'setLocale'], function (){
 
     Route::post('contact_post', [ContactController::class,'contact_post']);
     Route::post('subscribe', [SubscriptionController::class,'subscribe']);
+
+    Route::get('filters', [FilterController::class,'index']);
 
 });

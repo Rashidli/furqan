@@ -55,7 +55,7 @@ class ProductController extends Controller
             });
         }
 
-        $products = $query->orderBy('id','desc')->paginate($limit)->withQueryString();
+        $products = $query->withCount('modules')->orderBy('id','desc')->paginate($limit)->withQueryString();
 
         $categories = Category::active()->get();
         return view('admin.products.index', compact('products','categories'));

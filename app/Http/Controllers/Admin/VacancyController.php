@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Vacancy;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class VacancyController extends Controller
@@ -61,34 +62,38 @@ class VacancyController extends Controller
             'phone' => 'required',
             'email' => 'nullable'
         ]);
-
-        Vacancy::create([
-            'phone'=> $request->phone,
-            'email'=> $request->email,
-            'az'=>[
-                'title'=>$request->az_title,
-                'branch'=>$request->az_branch,
-                'requirement'=>$request->az_requirement,
-                'description'=>$request->az_description,
-                'slug'=>$this->generateUniqueSlug($request->az_title),
-            ],
-            'en'=>[
-                'title'=>$request->en_title,
-                'branch'=>$request->en_branch,
-                'requirement'=>$request->en_requirement,
-                'description'=>$request->en_description,
-                'slug'=>$this->generateUniqueSlug($request->en_title),
-            ],
-            'ru'=>[
-                'title'=>$request->ru_title,
-                'branch'=>$request->ru_branch,
-                'requirement'=>$request->ru_requirement,
-                'description'=>$request->ru_description,
-                'slug'=>$this->generateUniqueSlug($request->ru_title),
-            ],
-
-
-        ]);
+        DB::beginTransaction();
+        try {
+            Vacancy::create([
+                'phone'=> $request->phone,
+                'email'=> $request->email,
+                'az'=>[
+                    'title'=>$request->az_title,
+                    'branch'=>$request->az_branch,
+                    'requirement'=>$request->az_requirement,
+                    'description'=>$request->az_description,
+                    'slug'=>$this->generateUniqueSlug($request->az_title),
+                ],
+                'en'=>[
+                    'title'=>$request->en_title,
+                    'branch'=>$request->en_branch,
+                    'requirement'=>$request->en_requirement,
+                    'description'=>$request->en_description,
+                    'slug'=>$this->generateUniqueSlug($request->en_title),
+                ],
+                'ru'=>[
+                    'title'=>$request->ru_title,
+                    'branch'=>$request->ru_branch,
+                    'requirement'=>$request->ru_requirement,
+                    'description'=>$request->ru_description,
+                    'slug'=>$this->generateUniqueSlug($request->ru_title),
+                ],
+            ]);
+            DB::commit();
+        }catch (\Exception $exception){
+            DB::rollBack();
+            return $exception->getMessage();
+        }
 
         return redirect()->route('vacancies.index')->with('message','Vacancy added successfully');
 
@@ -134,32 +139,38 @@ class VacancyController extends Controller
             'phone' => 'required',
             'email' => 'nullable'
         ]);
+        DB::beginTransaction();
+        try {
+            $vacancy->update( [
 
-        $vacancy->update( [
+                'is_active'=> $request->is_active,
+                'phone'=> $request->phone,
+                'email'=> $request->email,
+                'az'=>[
+                    'title'=>$request->az_title,
+                    'branch'=>$request->az_branch,
+                    'requirement'=>$request->az_requirement,
+                    'description'=>$request->az_description,
+                ],
+                'en'=>[
+                    'title'=>$request->en_title,
+                    'branch'=>$request->en_branch,
+                    'requirement'=>$request->en_requirement,
+                    'description'=>$request->en_description,
+                ],
+                'ru'=>[
+                    'title'=>$request->ru_title,
+                    'branch'=>$request->ru_branch,
+                    'requirement'=>$request->ru_requirement,
+                    'description'=>$request->ru_description,
+                ]
 
-            'is_active'=> $request->is_active,
-            'phone'=> $request->phone,
-            'email'=> $request->email,
-            'az'=>[
-                'title'=>$request->az_title,
-                'branch'=>$request->az_branch,
-                'requirement'=>$request->az_requirement,
-                'description'=>$request->az_description,
-            ],
-            'en'=>[
-                'title'=>$request->en_title,
-                'branch'=>$request->en_branch,
-                'requirement'=>$request->en_requirement,
-                'description'=>$request->en_description,
-            ],
-            'ru'=>[
-                'title'=>$request->ru_title,
-                'branch'=>$request->ru_branch,
-                'requirement'=>$request->ru_requirement,
-                'description'=>$request->ru_description,
-            ]
-
-        ]);
+            ]);
+            DB::rollBack();
+        }catch (\Exception $exception){
+            DB::rollBack();
+            return $exception->getMessage();
+        }
 
         return redirect()->back()->with('message','Vacancy updated successfully');
 

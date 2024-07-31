@@ -86,7 +86,7 @@
                                                 <td>{{$product->title}}</td>
                                                 <td>{{$product->category?->parent?->title}}</td>
                                                 <td>{{$product->category?->title}}</td>
-                                                <td><a href="{{ route('products.modules.index', [$product->id]) }}" class="btn btn-info">Modullar</a></td>
+                                                <td><a href="{{ route('products.modules.index', [$product->id]) }}" class="btn btn-info">Modullar {{$product->modules_count}}</a></td>
 {{--                                                <td><img src="{{asset('storage/'.$product->image)}}" style="width: 100px; height: 50px" alt=""></td>--}}
                                                 <td>
                                                     @if($product->is_active)
