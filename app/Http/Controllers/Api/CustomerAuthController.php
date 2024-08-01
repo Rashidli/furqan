@@ -3,25 +3,35 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Admin\Controller;
+use App\Http\Resources\CustomerResource;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
-use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Auth;
-use \Illuminate\Http\JsonResponse;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Validator;
 
 class CustomerAuthController extends Controller
 {
     public function register(Request $request): JsonResponse
     {
-        $request->validate([
+        $rules = [
             "name" => "required",
             "surname" => "required",
             "phone" => "required",
             "email" => "required|email|unique:customers,email",
             "password" => "required|confirmed"
-        ]);
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json([
+                "status" => false,
+                "errors" => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
         Customer::create([
             "name" => $request->name,
@@ -50,11 +60,12 @@ class CustomerAuthController extends Controller
                 "message" => "Invalid credentials"
             ], Response::HTTP_UNAUTHORIZED);
         }
-
+        $customer = Auth::guard('api')->user();
         return response()->json([
             "status" => true,
             "message" => "User logged in successfully",
-            "token" => $token
+            "token" => $token,
+            "user" => new CustomerResource($customer)
         ], Response::HTTP_OK);
     }
 
@@ -65,7 +76,7 @@ class CustomerAuthController extends Controller
         return response()->json([
             "status" => true,
             "message" => "Profile data",
-            "data" => $userdata
+            "user" => new CustomerResource($userdata)
         ], Response::HTTP_OK);
     }
 
@@ -94,13 +105,13 @@ class CustomerAuthController extends Controller
     {
         $user = Auth::guard('api')->user();
 
-        $request->validate([
-            "name" => "sometimes|required",
-            "surname" => "sometimes|required",
-            "phone" => "sometimes|required",
-            "email" => "sometimes|required|email|unique:customers,email," . $user->id,
-            "password" => "sometimes|confirmed"
-        ]);
+//        $request->validate([
+//            "name" => "sometimes|required",
+//            "surname" => "sometimes|required",
+//            "phone" => "sometimes|required",
+//            "email" => "sometimes|required|email|unique:customers,email," . $user->id,
+//            "password" => "sometimes|confirmed"
+//        ]);
 
         if ($request->has('name')) {
             $user->name = $request->name;
@@ -151,4 +162,6 @@ class CustomerAuthController extends Controller
             "message" => "Password updated successfully"
         ], Response::HTTP_OK);
     }
+
+
 }

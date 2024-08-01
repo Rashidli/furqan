@@ -69,9 +69,11 @@
                                         <thead>
                                             <tr>
                                                 <th>№</th>
+                                                <th>Şəkli</th>
                                                 <th>Adı</th>
                                                 <th>Üst kateqoriyası</th>
-                                                <th>Kateqoriyası</th>
+                                                <th>alt kateqoriyası</th>
+                                                <th>Qiymət</th>
                                                 <th>Modullar</th>
                                                 <th>Status</th>
                                                 <th>Əməliyat</th>
@@ -83,11 +85,12 @@
 
                                             <tr>
                                                 <td>{{$key+1}}</td>
+                                                <td><img src="{{asset('storage/'.$product->image)}}" style="width: 100px; height: 50px" alt=""></td>
                                                 <td>{{$product->title}}</td>
-                                                <td>{{$product->category?->parent?->title}}</td>
+                                                <td>{{$product->parentCategory?->title}}</td>
                                                 <td>{{$product->category?->title}}</td>
+                                                <td>{{$product->price}}</td>
                                                 <td><a href="{{ route('products.modules.index', [$product->id]) }}" class="btn btn-info">Modullar {{$product->modules_count}}</a></td>
-{{--                                                <td><img src="{{asset('storage/'.$product->image)}}" style="width: 100px; height: 50px" alt=""></td>--}}
                                                 <td>
                                                     @if($product->is_active)
                                                         <i

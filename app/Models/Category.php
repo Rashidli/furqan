@@ -31,7 +31,12 @@ class Category extends Model
 
     public function products()
     {
-        return $this->hasMany(Product::class)->where('is_active',true);
+        return $this->hasMany(Product::class);
+    }
+
+    public function parentProducts()
+    {
+        return $this->hasMany(Product::class, 'parent_category_id');
     }
 
 }

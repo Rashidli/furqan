@@ -1,7 +1,9 @@
 <?php
 
 
-use App\Http\Controllers\Api\{CartController,
+use App\Http\Controllers\Api\{AddressController,
+    CartController,
+    CategoryController,
     ContactItemController,
     ContactController,
     CreditController,
@@ -10,6 +12,8 @@ use App\Http\Controllers\Api\{CartController,
     LogoController,
     MainAboutController,
     OfficeController,
+    OrderController,
+    ProductController,
     ServiceController,
     SocialController,
     SubscriptionController,
@@ -46,12 +50,20 @@ Route::group(['middleware'=>'setLocale'], function (){
         Route::post("updatePassword", [CustomerAuthController::class, "updatePassword"]);
 
         Route::get('favorites', [FavoritesController::class, 'index']);
+        Route::post('favorites/addAll', [FavoritesController::class, 'addAll']);
         Route::post('favorites/add/{product}', [FavoritesController::class, 'add']);
         Route::post('favorites/remove/{product}', [FavoritesController::class, 'remove']);
 
         Route::get('/cart', [CartController::class, 'index']);
         Route::post('/cart/add/{product}', [CartController::class, 'add']);
         Route::post('/cart/remove/{product}', [CartController::class, 'remove']);
+
+        Route::get('/orders', [OrderController::class, 'index']);
+        Route::post('/orders', [OrderController::class, 'store']);
+
+        Route::get('address', [AddressController::class,'index']);
+        Route::post('address', [AddressController::class,'store']);
+        Route::put('address', [AddressController::class,'update']);
 
     });
 
@@ -76,5 +88,8 @@ Route::group(['middleware'=>'setLocale'], function (){
     Route::post('subscribe', [SubscriptionController::class,'subscribe']);
 
     Route::get('filters', [FilterController::class,'index']);
+    Route::get('categories', [CategoryController::class,'index']);
+    Route::get('popular_products', [ProductController::class,'popularProducts']);
+    Route::get('all_products', [ProductController::class,'allProducts']);
 
 });

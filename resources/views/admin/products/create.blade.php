@@ -13,15 +13,15 @@
 
                                 <div class="mb-3">
                                     <label class="col-form-label">Kateqoriya*</label>
-                                    <select class="form-control" name="category_id" id="category_id">
+                                    <select class="form-control" name="parent_category_id" id="category_id">
                                         <option value="">Select Category</option>
                                         @foreach($categories as $category)
-                                            <option value="{{ $category->id }}" {{ old('category_id', request()->category_id) == $category->id ? 'selected' : '' }}>
+                                            <option value="{{ $category->id }}" {{ old('parent_category_id', request()->parent_category_id) == $category->id ? 'selected' : '' }}>
                                                 {{ $category->title }}
                                             </option>
                                         @endforeach
                                     </select>
-                                    @error('category_id')
+                                    @error('parent_category_id')
                                     <small class="form-text text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
@@ -104,6 +104,12 @@
                                 </div>
 
                                 <div class="mb-3">
+                                    <label class="col-form-label">Yeni məhsul?</label>
+                                    <input  type="checkbox" name="is_new">
+                                    @if($errors->first('is_new')) <small class="form-text text-danger">{{$errors->first('is_new')}}</small> @endif
+                                </div>
+
+                                <div class="mb-3">
                                     <button class="btn btn-primary">Yadda saxla</button>
                                 </div>
 
@@ -158,33 +164,33 @@
 </div>
 
 @include('admin.includes.footer')
-{{--<script>--}}
-{{--    $(document).ready(function() {--}}
-{{--        $('#category_id').change(function() {--}}
-{{--            var categoryId = $(this).val();--}}
-{{--            if (categoryId) {--}}
-{{--                $.ajax({--}}
-{{--                    url: '/categories/' + categoryId + '/children',--}}
-{{--                    type: 'GET',--}}
-{{--                    success: function(response) {--}}
-{{--                        console.log(response)--}}
-{{--                        if (response.length > 0) {--}}
-{{--                            var childSelect = '<div class="mb-3"><label class="col-form-label">Sub-Kateqoriya</label>';--}}
-{{--                            childSelect += '<select class="form-control" name="category_id" id="subcategory_id">';--}}
-{{--                            childSelect += '<option value="">Select Sub-Category</option>';--}}
-{{--                            $.each(response, function(index, childCategory) {--}}
-{{--                                childSelect += '<option value="' + childCategory.id + '">' + childCategory.title + '</option>';--}}
-{{--                            });--}}
-{{--                            childSelect += '</select></div>';--}}
-{{--                            $('#child-category-container').html(childSelect);--}}
-{{--                        } else {--}}
-{{--                            $('#child-category-container').html('<small class="form-text text-muted">No sub-categories available.</small>');--}}
-{{--                        }--}}
-{{--                    }--}}
-{{--                });--}}
-{{--            } else {--}}
-{{--                $('#child-category-container').html('');--}}
-{{--            }--}}
-{{--        });--}}
-{{--    });--}}
-{{--</script>--}}
+<script>
+    $(document).ready(function() {
+        $('#category_id').change(function() {
+            var categoryId = $(this).val();
+            if (categoryId) {
+                $.ajax({
+                    url: '/categories/' + categoryId + '/children',
+                    type: 'GET',
+                    success: function(response) {
+                        console.log(response)
+                        if (response.length > 0) {
+                            var childSelect = '<div class="mb-3"><label class="col-form-label">Sub-Kateqoriya</label>';
+                            childSelect += '<select class="form-control" name="category_id" id="subcategory_id">';
+                            childSelect += '<option value="">Select Sub-Category</option>';
+                            $.each(response, function(index, childCategory) {
+                                childSelect += '<option value="' + childCategory.id + '">' + childCategory.title + '</option>';
+                            });
+                            childSelect += '</select></div>';
+                            $('#child-category-container').html(childSelect);
+                        } else {
+                            $('#child-category-container').html('<small class="form-text text-muted">No sub-categories available.</small>');
+                        }
+                    }
+                });
+            } else {
+                $('#child-category-container').html('');
+            }
+        });
+    });
+</script>

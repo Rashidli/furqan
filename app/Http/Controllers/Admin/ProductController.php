@@ -68,7 +68,7 @@ class ProductController extends Controller
 
     public function create()
     {
-        $categories = Category::all();
+        $categories = Category::whereNull('parent_id')->get();
         $filters = Filter::with('options')->active()->get();
         return view('admin.products.create', compact('categories','filters'));
     }
@@ -80,9 +80,16 @@ class ProductController extends Controller
     {
 
         $request->validate([
-
+            'az_title'=>'required',
+            'en_title'=>'required',
+            'ru_title'=>'required',
+            'az_description'=>'required',
+            'en_description'=>'required',
+            'ru_description'=>'required',
+            'price'=>'nullable',
+            'discounted_price'=>'nullable',
+            'parent_category_id'=>'required',
         ]);
-
         DB::beginTransaction();
         try {
             if($request->hasFile('image')){
@@ -91,11 +98,13 @@ class ProductController extends Controller
 
             $product = Product::create([
                 'category_id' => $request->category_id,
+                'parent_category_id' => $request->parent_category_id,
                 'price' => $request->price,
                 'discounted_price' => $request->discounted_price,
                 'discount_percent' => $request->discount_percent,
                 'is_popular' => isset($request->is_popular),
                 'is_stock' => isset($request->is_stock),
+                'is_new' => isset($request->is_new),
                 'image'=>  $filename,
                 'az'=>[
                     'title'=>$request->az_title,
@@ -158,9 +167,10 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $categories = Category::all();
         $filters = Filter::with('options')->active()->get();
-        return view('admin.products.edit', compact('product','categories','filters'));
+        $categories = Category::whereNull('parent_id')->get();
+        $subcategories = Category::where('parent_id', $product->parent_category_id)->get();
+        return view('admin.products.edit', compact('product','categories','filters','subcategories'));
     }
 
     /**
@@ -179,7 +189,7 @@ class ProductController extends Controller
             'ru_description'=>'required',
             'price'=>'nullable',
             'discounted_price'=>'nullable',
-            'category_id'=>'required',
+            'parent_category_id'=>'required',
         ]);
 
         DB::beginTransaction();
@@ -192,25 +202,27 @@ class ProductController extends Controller
             $product->update( [
                 'is_active'=> $request->is_active,
                 'category_id' => $request->category_id,
+                'parent_category_id' => $request->parent_category_id,
                 'price' => $request->price,
                 'discounted_price' => $request->discounted_price,
                 'is_stock' => isset($request->is_stock),
                 'is_popular' => isset($request->is_popular),
                 'discount_percent' => $request->discount_percent,
+                'is_new' => isset($request->is_new),
                 'az'=>[
                     'title'=>$request->az_title,
                     'description'=>$request->az_description,
-                    'slug'=>$this->generateUniqueSlug($request->az_title),
+//                    'slug'=>$this->generateUniqueSlug($request->az_title),
                 ],
                 'en'=>[
                     'title'=>$request->en_title,
                     'description'=>$request->en_description,
-                    'slug'=>$this->generateUniqueSlug($request->en_title),
+//                    'slug'=>$this->generateUniqueSlug($request->en_title),
                 ],
                 'ru'=>[
                     'title'=>$request->ru_title,
                     'description'=>$request->ru_description,
-                    'slug'=>$this->generateUniqueSlug($request->ru_title),
+//                    'slug'=>$this->generateUniqueSlug($request->ru_title),
                 ]
 
             ]);

@@ -42,23 +42,23 @@
             <div class="d-flex">
                 <!-- LOGO -->
                 <div class="navbar-brand-box">
-                    <a href="{{route('home')}}" class="logo logo-dark">
-                                <span class="logo-sm">
-                                    <img src="{{asset('assets/images/logo-sm.png')}}" alt="logo-sm" height="22">
-                                </span>
-                        <span class="logo-lg">
-                                    <img src="{{asset('assets/images/logo-dark.png')}}" alt="logo-dark" height="20">
-                                </span>
-                    </a>
+{{--                    <a href="{{route('home')}}" class="logo logo-dark">--}}
+{{--                                <span class="logo-sm">--}}
+{{--                                    <img src="{{asset('assets/images/logo-sm.png')}}" alt="logo-sm" height="22">--}}
+{{--                                </span>--}}
+{{--                        <span class="logo-lg">--}}
+{{--                                    <img src="{{asset('assets/images/logo-dark.png')}}" alt="logo-dark" height="20">--}}
+{{--                                </span>--}}
+{{--                    </a>--}}
 
-                    <a href="{{route('home')}}" class="logo logo-light">
-                                <span class="logo-sm">
-                                    <img src="{{asset('assets/images/logo-sm.png')}}" alt="logo-sm-light" height="22">
-                                </span>
-                        <span class="logo-lg">
-                                    <img src="{{asset('assets/images/logo-light.png')}}" alt="logo-light" height="20">
-                                </span>
-                    </a>
+{{--                    <a href="{{route('home')}}" class="logo logo-light">--}}
+{{--                                <span class="logo-sm">--}}
+{{--                                    <img src="{{asset('assets/images/logo-sm.png')}}" alt="logo-sm-light" height="22">--}}
+{{--                                </span>--}}
+{{--                        <span class="logo-lg">--}}
+{{--                                    <img src="{{asset('assets/images/logo-light.png')}}" alt="logo-light" height="20">--}}
+{{--                                </span>--}}
+{{--                    </a>--}}
                 </div>
 
                 <button type="button" class="btn btn-sm px-3 font-size-24 header-item waves-effect"
@@ -158,6 +158,18 @@
                             <li><a href="{{route('users.create')}}">İstifadəçi yarat</a></li>
                             <li><a href="{{route('users.index')}}">İstifadəçilər</a></li>
                         </ul>
+                    </li>
+                    <li>
+                        <a href="{{route('customers.index')}}">
+                            <i class="ri-layout-3-line"></i>
+                            <span>Users</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{route('orders.index')}}">
+                            <i class="ri-layout-3-line"></i>
+                            <span>Sifarişlər</span>
+                        </a>
                     </li>
                     <li>
                         <a href="{{route('mains.index')}}">

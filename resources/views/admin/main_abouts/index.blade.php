@@ -11,7 +11,7 @@
                                     <div class="alert alert-success">{{session('message')}}</div>
                                 @endif
                                 <h4 class="card-title">Haqqımızda</h4>
-                                    <a href="{{route('main_abouts.create')}}" class="btn btn-primary">+</a>
+{{--                                    <a href="{{route('main_abouts.create')}}" class="btn btn-primary">+</a>--}}
                                 <br>
                                 <br>
                                 <div class="table-responsive">

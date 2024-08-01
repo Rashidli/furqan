@@ -1,10 +1,14 @@
 @include('admin.includes.header')
-
+<style>
+    #chart {
+        max-width: 650px;
+        margin: 35px auto;
+    }
+</style>
 <div class="main-content">
 
     <div class="page-content">
         <div class="container-fluid">
-
             <!-- start page title -->
             <div class="row">
                 <div class="col-12">
@@ -23,81 +27,13 @@
             </div>
             <!-- end page title -->
 
-{{--            <div class="row">--}}
-{{--                <div class="col-xl-3 col-md-6">--}}
-{{--                    <div class="card">--}}
-{{--                        <div class="card-body">--}}
-{{--                            <div class="d-flex">--}}
-{{--                                <div class="flex-grow-1">--}}
-{{--                                    <p class="text-truncate font-size-14 mb-2">Müştəri sayı</p>--}}
-{{--                                    <h4 class="mb-2">{{$customer_count}}</h4>--}}
-{{--                                </div>--}}
+            <div class="row">
+                <div class="col-12">
+                    <div id="chart">
 
-{{--                                <div class="avatar-sm">--}}
-{{--                                                <span class="avatar-title bg-light text-primary rounded-3">--}}
-{{--                                                    <i class="ri-user-3-line font-size-24"></i>--}}
-{{--                                                </span>--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
-{{--                        </div><!-- end cardbody -->--}}
-{{--                    </div><!-- end card -->--}}
-{{--                </div><!-- end col -->--}}
-{{--                <div class="col-xl-3 col-md-6">--}}
-{{--                    <div class="card">--}}
-{{--                        <div class="card-body">--}}
-{{--                            <div class="d-flex">--}}
-{{--                                <div class="flex-grow-1">--}}
-{{--                                    <p class="text-truncate font-size-14 mb-2">Görüş sayı</p>--}}
-{{--                                    <h4 class="mb-2">{{$meeting_count}}</h4>--}}
-
-{{--                                </div>--}}
-{{--                                <div class="avatar-sm">--}}
-{{--                                                <span class="avatar-title bg-light text-success rounded-3">--}}
-{{--                                                    <i class="mdi mdi-currency-usd font-size-24"></i>--}}
-{{--                                                </span>--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
-{{--                        </div><!-- end cardbody -->--}}
-{{--                    </div><!-- end card -->--}}
-{{--                </div><!-- end col -->--}}
-{{--                <div class="col-xl-3 col-md-6">--}}
-{{--                    <div class="card">--}}
-{{--                        <div class="card-body">--}}
-{{--                            <div class="d-flex">--}}
-{{--                                <div class="flex-grow-1">--}}
-{{--                                    <p class="text-truncate font-size-14 mb-2">Əsas ödənişlər</p>--}}
-{{--                                    <h4 class="mb-2">{{$payment_count}}</h4>--}}
-{{--                                </div>--}}
-{{--                                <div class="avatar-sm">--}}
-{{--                                                <span class="avatar-title bg-light text-primary rounded-3">--}}
-{{--                                                    <i class="ri-shopping-cart-2-line font-size-24"></i>--}}
-{{--                                                </span>--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
-{{--                        </div><!-- end cardbody -->--}}
-{{--                    </div><!-- end card -->--}}
-{{--                </div><!-- end col -->--}}
-{{--                <div class="col-xl-3 col-md-6">--}}
-{{--                    <div class="card">--}}
-{{--                        <div class="card-body">--}}
-{{--                            <div class="d-flex">--}}
-{{--                                <div class="flex-grow-1">--}}
-{{--                                    <p class="text-truncate font-size-14 mb-2">Akt sayı</p>--}}
-{{--                                    <h4 class="mb-2">{{$act_count}}</h4>--}}
-{{--                                </div>--}}
-{{--                                <div class="avatar-sm">--}}
-{{--                                                <span class="avatar-title bg-light text-success rounded-3">--}}
-{{--                                                    <i class="mdi mdi-currency-btc font-size-24"></i>--}}
-{{--                                                </span>--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
-{{--                        </div><!-- end cardbody -->--}}
-{{--                    </div><!-- end card -->--}}
-{{--                </div><!-- end col -->--}}
-{{--            </div>--}}
-            <!-- end row -->
-
-
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -107,7 +43,8 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-6">
-                    <script>document.write(new Date().getFullYear())</script> © Corporate
+                    <script>document.write(new Date().getFullYear())</script>
+                    © Corporate
                 </div>
                 <div class="col-sm-6">
                     <div class="text-sm-end d-none d-sm-block">
@@ -121,3 +58,30 @@
 </div>
 
 @include('admin.includes.footer')
+<script>
+    // Fetch the registration data from the API
+    fetch('/customer-registrations-per-day')
+        .then(response => response.json())
+        .then(data => {
+            const dates = data.map(item => item.date);
+            const counts = data.map(item => item.count);
+
+            var options = {
+                chart: {
+                    type: 'bar'
+                },
+                series: [{
+                    name: 'User sayı',
+                    data: counts
+                }],
+                xaxis: {
+                    categories: dates
+                }
+            }
+
+            var chart = new ApexCharts(document.querySelector("#chart"), options);
+
+            chart.render();
+        })
+        .catch(error => console.error('Error fetching data:', error));
+</script>

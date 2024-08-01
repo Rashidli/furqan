@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\{AboutController,
     ContactController,
     ContactItemController,
     CreditController,
+    CustomerController,
     FilterController,
     ImageController,
     MainAboutController,
@@ -15,6 +16,7 @@ use App\Http\Controllers\Admin\{AboutController,
     ModuleController,
     OfficeController,
     OptionController,
+    OrderController,
     PageController,
     PermissionController,
     ProductController,
@@ -89,8 +91,11 @@ Route::group(['middleware' =>'auth'], function (){
     Route::resource('vacancies',VacancyController::class);
     Route::resource('products.modules',ModuleController::class);
     Route::resource('filters',FilterController::class);
+    Route::resource('customers',CustomerController::class);
+    Route::resource('orders',OrderController::class);
     Route::resource('filters.options',OptionController::class);
     Route::get('/delete-slider-image/{id}', [ProductController::class, 'deleteImage'])->name('delete-slider-image');
+    Route::get('/customer-registrations-per-day', [CustomerController::class, 'customerRegistrationsPerDay']);
 
     Route::get('/categories/{id}/children', [CategoryController::class, 'getChildren']);
 

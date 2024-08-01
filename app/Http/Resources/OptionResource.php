@@ -17,7 +17,8 @@ class OptionResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'icon' => $this->image ? url('/') . '/storage/' . $this->image : null
+            'icon' => $this->image ? url('/') . '/storage/' . $this->image : null,
+//            'filter' => new FilterResource($this->filter)
         ];
     }
 }

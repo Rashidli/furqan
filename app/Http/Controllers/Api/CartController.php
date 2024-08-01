@@ -14,15 +14,24 @@ class CartController extends Controller
 {
     public function index()
     {
-        $customer = Auth::guard('api')->user();
-        $cart = $customer->cart;
-        if ($cart) {
-            $cartItems = $cart->items()->with('product')->get();
+        try {
+            $customer = Auth::guard('api')->user();
+            $cart = $customer->cart;
+            if ($cart) {
+                return response()->json([
+                    'status' => true,
+                    'cart' => new CartResource($cart->load('items.product'))
+                ]);
+            } else {
+                $cart = Cart::create(['customer_id' => $customer->id]);
+            }
+        } catch (\Exception $exception) {
             return response()->json([
-                'status' => true,
-                'cart' => new CartResource($cart)
+                'status' => false,
+                'message' => $exception->getMessage()
             ]);
         }
+
         return response()->json([
             'status' => true,
             'cart' => new CartResource($cart)
@@ -35,20 +44,24 @@ class CartController extends Controller
         $cart = $customer->cart ?: Cart::create(['customer_id' => $customer->id]);
 
         $cartItem = $cart->items()->where('product_id', $product->id)->first();
+        $quantityToAdd = $request->input('quantity', 1);
 
         if ($cartItem) {
-            $cartItem->quantity += $request->input('quantity', 1);
+            $cartItem->quantity += $quantityToAdd;
             $cartItem->save();
         } else {
             $cart->items()->create([
                 'product_id' => $product->id,
-                'quantity' => $request->input('quantity', 1),
+                'quantity' => $quantityToAdd,
             ]);
         }
 
+        $cart->total_price += $quantityToAdd * $product->price;
+        $cart->save();
+
         return response()->json([
             'status' => true,
-            'cart' => new CartResource($cart)
+            'cart' => new CartResource($cart->load('items.product'))
         ]);
     }
 
@@ -60,13 +73,15 @@ class CartController extends Controller
         if ($cart) {
             $cartItem = $cart->items()->where('product_id', $product->id)->first();
             if ($cartItem) {
+                $cart->total_price -= $cartItem->quantity * $product->price;
                 $cartItem->delete();
+                $cart->save();
             }
         }
 
         return response()->json([
             'status' => true,
-            'cart' => new CartResource($cart)
+            'cart' => new CartResource($cart->load('items.product'))
         ]);
     }
 }

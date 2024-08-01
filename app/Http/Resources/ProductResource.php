@@ -18,7 +18,8 @@ class ProductResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'content' => $this->description,
-            'category' => new CategoryResource($this->category),
+            'category_name' => $this->parentCategory?->title,
+            'parent_category_id' =>$this->parent_category_id,
             'img' => url('/') . '/storage/' . $this->image,
             'price' => $this->price,
             'discounted_price' => $this->discounted_price,
@@ -26,8 +27,11 @@ class ProductResource extends JsonResource
             'is_in_cart' => $this->is_in_cart,
             'is_stock' => $this->is_stock,
             'is_popular' => $this->is_popular,
+            'is_new' => $this->is_new,
             'slug' => $this->slug,
-            'images' => ImageResource::collection($this->product_images)
+            'images' => ImageResource::collection($this->product_images),
+            'modules' => ModuleResource::collection($this->modules),
+            'options' => OptionResource::collection($this->options),
         ];
     }
 }
